@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { BudgetContext } from "../context/BudgetContext";
 import { BudgetStateType } from "../reducers/budget-reducer";
+import { DraftExpense } from "../types";
 
 export const useBudget = () => {
   const { state, dispatch } = useContext(BudgetContext);
@@ -17,6 +18,10 @@ export const useBudget = () => {
     dispatch({ type: "close_modal" });
   };
 
+  const addExpense = (payload: DraftExpense) => {
+    dispatch({ type: "add_expense", payload: { expense: payload } });
+  };
+
   if (!state) {
     throw new Error("useBudget must be used within a BudgetProvider");
   }
@@ -26,5 +31,6 @@ export const useBudget = () => {
     state,
     showModal,
     closeModal,
+    addExpense,
   };
 };

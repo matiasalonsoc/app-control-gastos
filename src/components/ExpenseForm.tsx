@@ -3,6 +3,7 @@ import "react-calendar/dist/Calendar.css";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import { categories } from "../data/categories";
+import { useBudget } from "../hooks/useBudget";
 import { DraftExpense, Value } from "../types";
 import { ErrorMessage } from "./ErrorMessage";
 
@@ -13,6 +14,8 @@ export const ExpenseForm = () => {
     category: "",
     date: new Date(),
   });
+
+  const { addExpense } = useBudget();
 
   const [error, setError] = useState("");
 
@@ -43,7 +46,13 @@ export const ExpenseForm = () => {
       return;
     }
 
-    console.log("Perfect!");
+    addExpense(expense);
+    setExpense({
+      amount: 0,
+      expenseName: "",
+      category: "",
+      date: new Date(),
+    });
   };
 
   return (
