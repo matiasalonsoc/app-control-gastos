@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
@@ -15,7 +16,18 @@ export const ExpenseForm = () => {
     date: new Date(),
   });
 
-  const { addExpense } = useBudget();
+  const { addExpense, state, dispatch, remain } = useBudget();
+  const [previousAmount, setPreviousAmount] = useState(0);
+
+  useEffect(() => {
+    if (state.editingId) {
+      const editingExpense = state.expenses.find(
+        (exp) => exp.id === state.editingId
+      );
+      setExpense(editingExpense!);
+      setPreviousAmount(editingExpense?.amount || 0);
+    }
+  }, [state.editingId]);
 
   const [error, setError] = useState("");
 
@@ -46,7 +58,20 @@ export const ExpenseForm = () => {
       return;
     }
 
-    addExpense(expense);
+    if (expense.amount - previousAmount > remain) {
+      setError("El gasto no puede ser mayor al presupuesto restante");
+      return;
+    }
+
+    if (state.editingId) {
+      dispatch({
+        type: "update_expense",
+        payload: { expense: { ...expense, id: state.editingId } },
+      });
+    } else {
+      addExpense(expense);
+    }
+
     setExpense({
       amount: 0,
       expenseName: "",
@@ -58,7 +83,7 @@ export const ExpenseForm = () => {
   return (
     <form className='space-y-5' onSubmit={handleSubmit}>
       <legend className=' uppercase text-center text-2xl font-black border-b-4 border-blue-500 py-2'>
-        Nuevo gasto
+        {state.editingId ? "Editar gasto" : "Registrar gasto"}
       </legend>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -125,7 +150,7 @@ export const ExpenseForm = () => {
       </div>
 
       <button className=' bg-blue-600 w-full p-2 text-white uppercase font-bold rounded-lg'>
-        Registrar gasto
+        {state.editingId ? "Editar gasto" : "Registrar gasto"}
       </button>
     </form>
   );

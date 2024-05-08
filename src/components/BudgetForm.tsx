@@ -11,7 +11,13 @@ export const BudgetForm = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setNewBudget({ budget });
+    setNewBudget({
+      budget,
+      modal: false,
+      expenses: [],
+      editingId: "",
+      currentCategory: "",
+    });
   };
 
   return (

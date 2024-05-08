@@ -9,6 +9,7 @@ import {
 import "react-swipeable-list/dist/styles.css";
 import { categories } from "../data/categories";
 import { formatDate } from "../helpers";
+import { useBudget } from "../hooks/useBudget";
 import { Expense } from "../types";
 import { AmountDisplay } from "./AmountDisplay";
 // https://grafana.zksync.org/
@@ -18,6 +19,8 @@ type ExpenseDetailProps = {
 };
 
 export const ExpenseDetail = ({ expense }: ExpenseDetailProps) => {
+  const { removeExpense, getExpenseById } = useBudget();
+
   const categoryInfo = useMemo(
     () => categories.filter((cat) => cat.id === expense.category)[0],
     [expense]
@@ -25,13 +28,15 @@ export const ExpenseDetail = ({ expense }: ExpenseDetailProps) => {
 
   const leadingActions = () => (
     <LeadingActions>
-      <SwipeAction onClick={() => {}}>Actualizar</SwipeAction>
+      <SwipeAction onClick={() => getExpenseById(expense.id)}>
+        Actualizar
+      </SwipeAction>
     </LeadingActions>
   );
 
   const trailingActions = () => (
     <TrailingActions>
-      <SwipeAction destructive={true} onClick={() => {}}>
+      <SwipeAction destructive={true} onClick={() => removeExpense(expense.id)}>
         Eliminar
       </SwipeAction>
     </TrailingActions>
@@ -40,11 +45,11 @@ export const ExpenseDetail = ({ expense }: ExpenseDetailProps) => {
   return (
     <SwipeableList>
       <SwipeableListItem
-        maxSwipe={30}
+        maxSwipe={10}
         leadingActions={leadingActions()}
         trailingActions={trailingActions()}
       >
-        <div className='bg-white shadow-lg p-10 w-full border-b border-gray-200 flex gap-5 items-center'>
+        <div className='bg-white shadow-lg px-8 py-6 w-full border-b border-gray-200 flex gap-5 items-center'>
           <div>
             <img
               src={`/public/icono_${categoryInfo.icon}.svg`}
